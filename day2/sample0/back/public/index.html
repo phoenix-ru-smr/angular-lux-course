@@ -1,0 +1,66 @@
+<html ng-app="app">
+<head>
+  <title>Hell from node</title>
+  <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+  <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+  <script src="js/angular.js"></script>
+  <style type="text/css">
+    .myrow {
+      height: 30px;
+      align-content: flex-start;
+    }
+  </style>
+</head>
+<body>
+  <div class="tabbable"> <!-- Only required for left/right tabs -->
+  <ul class="nav nav-tabs">
+    <li class="active"><a href="#tab1" data-toggle="tab">$watch using lambda hell</a></li>
+    <li><a href="#tab2" data-toggle="tab">ng-change hell</a></li>
+    <li><a href="#tab3" data-toggle="tab">$watch using method reference with bind hell</a></li>
+  </ul>
+  <div class="tab-content">
+    <div class="tab-pane active" id="tab1" ng-controller="UserCtrl as ctrl" ng-cloak>
+        <h1>$watch using lambda hell "{{ctrl.fullname}}"</h1>
+      <div class="container">
+        <div class="col-xs-2">
+          <div class="myrow">Name:</div>
+          <div class="myrow">Surname:</div>
+        </div>
+        <div class="col-xs-10">
+          <div class="myrow"><input type="text" ng-model="ctrl.name"/></div>
+          <div class="myrow"><input type="text" ng-model="ctrl.surname"/></div>
+        </div>
+      </div>
+    </div>
+    <div class="tab-pane" id="tab2"ng-controller="UserCtrl as ctrl" ng-class>
+      <h1>ng-change hell "{{ctrl.fullname1}}"</h1>
+      <div class="container">
+        <div class="col-xs-2">
+          <div class="myrow">Name:</div>
+          <div class="myrow">Surname:</div>
+        </div>
+        <div class="col-xs-10">
+          <div class="myrow"><input type="text" ng-model="ctrl.name1" ng-change="ctrl.change()"/></div>
+          <div class="myrow"><input type="text" ng-model="ctrl.surname1" ng-change="ctrl.change()"/></div>
+        </div>
+      </div>
+    </div>
+    <div class="tab-pane" id="tab3"ng-controller="UserCtrl as ctrl" ng-class>
+      <h1>$watch using method reference with bind hell "{{ctrl.fullname2}}"</h1>
+      <div class="container">
+        <div class="col-xs-2">
+          <div class="myrow">Name:</div>
+          <div class="myrow">Surname:</div>
+        </div>
+        <div class="col-xs-10">
+          <div class="myrow"><input type="text" ng-model="ctrl.name2"/></div>
+          <div class="myrow"><input type="text" ng-model="ctrl.surname2"/></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+  <script src="js/app/all.js"></script>
+</body>
+</html>

@@ -1,0 +1,21 @@
+{
+  "name": "back",
+  "description": "nodejs backend",
+  "main": "index.js",
+  "authors": [
+    "the Master"
+  ],
+  "license": "ISC",
+  "moduleType": [],
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular": "*"
+  }
+}
