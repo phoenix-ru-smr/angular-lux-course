@@ -3,7 +3,7 @@ module app {
 
   export function UserAdminFilter() {
     return function(items:User[], flag: boolean): User[] {
-      return items.filter(item => (flag && item.isAdmin()) || (!flag && !item.isAdmin()));
+      return items.filter(item => (flag && item.admin) || (!flag && !item.admin));
     }
   }
 }

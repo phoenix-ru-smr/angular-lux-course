@@ -3,7 +3,7 @@ var app;
     "use strict";
     function UserAdminFilter() {
         return function (items, flag) {
-            return items.filter(function (item) { return (flag && item.isAdmin()) || (!flag && !item.isAdmin()); });
+            return items.filter(function (item) { return (flag && item.admin) || (!flag && !item.admin); });
         };
     }
     app.UserAdminFilter = UserAdminFilter;

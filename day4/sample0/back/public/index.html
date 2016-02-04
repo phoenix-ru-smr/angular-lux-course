@@ -28,8 +28,10 @@
           </div>
 
           <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1" style="padding-top:40px">
-            <button style="min-width:100%" class="btn" ng-click="ctrl.toggleAdmin()" ng-disabled="!ctrl.selectedUser"> < </button>
-            <button style="min-width:100%" class="btn" ng-click="ctrl.toggleUser()" ng-disabled="!ctrl.selectedAdmin"> > </button>
+            <button style="min-width:100%" class="btn"
+                ng-click="ctrl.toggleAdmin(ctrl.selectedUser)" ng-disabled="!ctrl.selectedUser"> < </button>
+            <button style="min-width:100%" class="btn"
+                ng-click="ctrl.toggleAdmin(ctrl.selectedAdmin)" ng-disabled="!ctrl.selectedAdmin"> > </button>
           </div>
 
 

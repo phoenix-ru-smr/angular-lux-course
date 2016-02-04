@@ -2,27 +2,29 @@ var app;
 (function (app) {
     'use strict';
     var User = (function () {
-        function User(_id, name, surname) {
-            this._id = _id;
+        function User(id, name, surname, admin) {
+            if (name === void 0) { name = 'name' + id; }
+            if (surname === void 0) { surname = 'surname' + id; }
+            if (admin === void 0) { admin = false; }
+            this.id = id;
             this.name = name;
             this.surname = surname;
-            this.id = _id;
-            this.admin = false;
-            if (angular.isUndefined(this.name)) {
-                this.name = 'name' + _id;
-            }
-            if (angular.isUndefined(this.surname)) {
-                this.surname = 'surname' + _id;
-            }
+            this.admin = admin;
         }
         User.prototype.fullname = function () {
             return this.name + ' ' + this.surname;
         };
-        User.prototype.isAdmin = function () {
-            return this.admin;
+        User.prototype.toggleAdmin = function () {
+            return new User(this.id, this.name, this.surname, !this.admin);
         };
-        User.prototype.setAdmin = function (_admin) {
-            this.admin = _admin;
+        User.fromJSON = function (a) {
+            return new User(a.id, a.name, a.surname, a.admin);
+        };
+        User.prototype.set = function (v) {
+            this.id = v.id;
+            this.name = v.name;
+            this.surname = v.surname;
+            this.admin = v.admin;
         };
         return User;
     })();

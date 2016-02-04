@@ -3,70 +3,106 @@ var app;
 (function (app) {
     "use strict";
     var UserCtrl = (function () {
-        function UserCtrl($scope) {
+        function UserCtrl($scope, $http) {
             this.$scope = $scope;
-            this.users = [
-                new app.User(1),
-                new app.User(2),
-                new app.User(3),
-                new app.User(4),
-                new app.User(5),
-                new app.User(6),
-                new app.User(7),
-                new app.User(8),
-                new app.User(9),
-                new app.User(10),
-                new app.User(11),
-                new app.User(12),
-                new app.User(13),
-                new app.User(14),
-                new app.User(15)
-            ];
-            this.cnt = this.users.length;
-            this.initSelections();
+            this.$http = $http;
+            this.users = [];
+            this.reloadUsers();
         }
-        UserCtrl.prototype.toggleAdmin = function () {
-            if (this.selectedUser) {
-                this.selectedUser.setAdmin(true);
-                this.initSelections();
+        UserCtrl.prototype.reloadUsers = function () {
+            var _this = this;
+            this.$http.get("/api/users", {
+                transformResponse: function (data, headers) {
+                    console.log("users to transform: " + JSON.stringify(data));
+                    data = JSON.parse(data);
+                    var a = [];
+                    for (var i = 0; i < data.length; i++) {
+                        a.push(app.User.fromJSON(data[i]));
+                    }
+                    return a;
+                    // return data.map((u: User) => {return User.fromJSON(u);});
+                }
+            })
+                .then(function (data) {
+                console.log("got user data: " + JSON.stringify(data));
+                _this.users = data.data;
+                _this.initSelections();
+            }, function (error) { console.log(error); });
+        };
+        UserCtrl.prototype.toggleAdmin = function (user) {
+            var _this = this;
+            user = this.findUser(user);
+            if (user) {
+                this.$http.put("/api/users/" + user.id, user.toggleAdmin(), {
+                    transformResponse: this.transformUser })
+                    .then(function (u) {
+                    user.set(u.data);
+                    _this.initSelections();
+                }, function (error) { console.log(error); });
             }
         };
-        UserCtrl.prototype.toggleUser = function () {
-            if (this.selectedAdmin) {
-                this.selectedAdmin.setAdmin(false);
-                this.initSelections();
-            }
-        };
-        UserCtrl.prototype.initSelections = function () {
-            this.selectedAdmin = this.users.filter(function (item) { return item.isAdmin(); })[0];
-            this.selectedUser = this.users.filter(function (item) { return !item.isAdmin(); })[0];
-        };
-        UserCtrl.prototype.addUser = function (id, name, surname, isEdit) {
-            if (isEdit) {
-                var found = this.users.filter(function (item) { return item.id == id; });
+        UserCtrl.prototype.findUser = function (user) {
+            if (user) {
+                var found = this.users.filter(function (item) { return item.id == user.id; });
                 if (found.length > 0) {
-                    found[0].name = name;
-                    found[0].surname = surname;
-                    this.selectedUser = found[0];
+                    return found[0];
+                }
+                else {
+                    return undefined;
                 }
             }
             else {
-                this.cnt = this.cnt + 1;
-                var u = new app.User(this.cnt, name, surname);
-                this.users.push(u);
-                if (angular.isUndefined(this.selectedUser)) {
-                    this.selectedUser = u;
+                return user;
+            }
+        };
+        UserCtrl.prototype.initSelections = function () {
+            this.selectedAdmin = this.users.filter(function (item) { return item.admin; })[0];
+            this.selectedUser = this.users.filter(function (item) { return !item.admin; })[0];
+        };
+        UserCtrl.prototype.transformUser = function (data, headers) {
+            console.log("tr got user data: " + JSON.stringify(data));
+            data = app.User.fromJSON(JSON.parse(data));
+            return data;
+        };
+        UserCtrl.prototype.addUser = function (id, name, surname, isEdit) {
+            var _this = this;
+            if (isEdit) {
+                console.log('update user:' + JSON.stringify(new app.User(id, name, surname)));
+                var found = this.findUser(new app.User(id));
+                if (found) {
+                    this.$http.put("/api/users/" + found.id, new app.User(id, name, surname, found.admin), {
+                        transformResponse: this.transformUser })
+                        .then(function (u) {
+                        u = u.data;
+                        found.set(u.data);
+                        _this.selectedUser = found;
+                    }, function (error) { console.log(error); });
                 }
+            }
+            else {
+                console.log('create new user:' + JSON.stringify(new app.User(0, name, surname, false)));
+                this.$http.post("/api/users/", new app.User(0, name, surname, false), {
+                    transformResponse: this.transformUser })
+                    .then(function (u) {
+                    u = u.data;
+                    _this.users.push(u);
+                    _this.selectedUser = u;
+                }, function (error) { console.log(error); });
             }
         };
         UserCtrl.prototype.deleteUser = function (user) {
-            console.log(JSON.stringify(user));
+            var _this = this;
+            console.log('deleting:' + JSON.stringify(user));
             if (user) {
-                var del = this.users.filter(function (u) { return u.id == user.id; });
-                if (del.length > 0) {
-                    var idx = this.users.indexOf(del[0]);
-                    this.users.splice(idx, 1);
-                    this.initSelections();
+                var del = this.findUser(user);
+                if (del) {
+                    this.$http.delete("/api/users/" + del.id)
+                        .then(function (u) {
+                        console.log("got on delete: " + JSON.stringify(u));
+                        var idx = _this.users.indexOf(del);
+                        _this.users.splice(idx, 1);
+                        _this.initSelections();
+                    }, function (error) { console.log(error); });
                 }
             }
         };
@@ -80,7 +116,7 @@ var app;
     "use strict";
     function UserAdminFilter() {
         return function (items, flag) {
-            return items.filter(function (item) { return (flag && item.isAdmin()) || (!flag && !item.isAdmin()); });
+            return items.filter(function (item) { return (flag && item.admin) || (!flag && !item.admin); });
         };
     }
     app.UserAdminFilter = UserAdminFilter;
@@ -90,27 +126,29 @@ var app;
 (function (app) {
     'use strict';
     var User = (function () {
-        function User(_id, name, surname) {
-            this._id = _id;
+        function User(id, name, surname, admin) {
+            if (name === void 0) { name = 'name' + id; }
+            if (surname === void 0) { surname = 'surname' + id; }
+            if (admin === void 0) { admin = false; }
+            this.id = id;
             this.name = name;
             this.surname = surname;
-            this.id = _id;
-            this.admin = false;
-            if (angular.isUndefined(this.name)) {
-                this.name = 'name' + _id;
-            }
-            if (angular.isUndefined(this.surname)) {
-                this.surname = 'surname' + _id;
-            }
+            this.admin = admin;
         }
         User.prototype.fullname = function () {
             return this.name + ' ' + this.surname;
         };
-        User.prototype.isAdmin = function () {
-            return this.admin;
+        User.prototype.toggleAdmin = function () {
+            return new User(this.id, this.name, this.surname, !this.admin);
         };
-        User.prototype.setAdmin = function (_admin) {
-            this.admin = _admin;
+        User.fromJSON = function (a) {
+            return new User(a.id, a.name, a.surname, a.admin);
+        };
+        User.prototype.set = function (v) {
+            this.id = v.id;
+            this.name = v.name;
+            this.surname = v.surname;
+            this.admin = v.admin;
         };
         return User;
     })();

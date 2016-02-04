@@ -2,18 +2,11 @@ module app{
   'use strict';
 
   export class User {
-    public id: number;
-    private admin: boolean
-
-    constructor(private _id: number, public name?: string, public surname?: string) {
-      this.id = _id;
-      this.admin = false;
-      if (angular.isUndefined(this.name)) {
-        this.name = 'name' + _id;
-      }
-      if (angular.isUndefined(this.surname)) {
-        this.surname = 'surname' + _id;
-      }
+    constructor(
+      public id: number,
+      public name: string = 'name' + id,
+      public surname: string = 'surname' + id,
+      public admin: boolean = false) {
     }
 
 
@@ -21,12 +14,20 @@ module app{
       return this.name + ' ' + this.surname;
     }
 
-    public isAdmin(): boolean {
-      return this.admin;
+
+    public toggleAdmin(): User {
+      return new User(this.id, this.name, this.surname, !this.admin);
     }
 
-    public setAdmin(_admin: boolean): void {
-      this.admin = _admin
+    public static fromJSON(a: User): User {
+      return new User(a.id, a.name, a.surname, a.admin);
+    }
+
+    public set(v: User): void {
+      this.id = v.id;
+      this.name = v.name;
+      this.surname = v.surname;
+      this.admin = v.admin;
     }
   }
 }
