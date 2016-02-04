@@ -12,40 +12,40 @@
     }
   </style>
 </head>
-<body>
+<body ng-controller="UserCtrl as ctrl">
       <h1 class="page-header">Odminka</h1>
-      <div class="container" ng-controller="UserCtrl as ctrl">
+      <div class="container" >
         <div class="row">
 
           <div class="col-xs-5 col-sm-5 col-md-4 col-lg-4">
             <h4>Admins</h4>
-            <select size = 10 style="min-width:100%" ng-model="ctrl.selectedAdmin"
-                ng-options="item.fullname() for item in ctrl.users | UserAdminFilter:true track by item.id">
+            <select size = 10 style="min-width:100%" ng-model="ctrl.userService.selectedAdmin"
+                ng-options="item.fullname() for item in ctrl.userService.users | UserAdminFilter:true track by item.id">
             </select>
             <button class="btn" style="margin-top:5px"
-                ng-click="ctrl.deleteUser(ctrl.selectedAdmin)",
-                ng-disabled="!ctrl.selectedAdmin">Delete Admin</button>
+                ng-click="ctrl.deleteUser(ctrl.userService.selectedAdmin)",
+                ng-disabled="!ctrl.userService.selectedAdmin">Delete Admin</button>
           </div>
 
           <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1" style="padding-top:40px">
             <button style="min-width:100%" class="btn"
-                ng-click="ctrl.toggleAdmin(ctrl.selectedUser)" ng-disabled="!ctrl.selectedUser"> < </button>
+                ng-click="ctrl.toggleAdmin(ctrl.userService.selectedUser)" ng-disabled="!ctrl.userService.selectedUser"> < </button>
             <button style="min-width:100%" class="btn"
-                ng-click="ctrl.toggleAdmin(ctrl.selectedAdmin)" ng-disabled="!ctrl.selectedAdmin"> > </button>
+                ng-click="ctrl.toggleAdmin(ctrl.userService.selectedAdmin)" ng-disabled="!ctrl.userService.selectedAdmin"> > </button>
           </div>
 
 
           <div class="col-xs-5 col-sm-5 col-md-4 col-lg-4">
             <h4>Non-Admins</h4>
-            <select size = 10 style="min-width:100%" ng-model="ctrl.selectedUser"
-                ng-options="item.fullname() for item in ctrl.users | UserAdminFilter:false track by item.id">
+            <select size = 10 style="min-width:100%" ng-model="ctrl.userService.selectedUser"
+                ng-options="item.fullname() for item in ctrl.userService.users | UserAdminFilter:false track by item.id">
             </select>
             <button class="btn" style="margin-top:5px"
-                ng-click="ctrl.deleteUser(ctrl.selectedUser)"
-                ng-disabled="!ctrl.selectedUser">Delete User</button>
+                ng-click="ctrl.deleteUser(ctrl.userService.selectedUser)"
+                ng-disabled="!ctrl.userService.selectedUser">Delete User</button>
             <button class="btn" style="margin-top:5px"
-                ng-click="isEdit = true; id = ctrl.selectedUser.id; name = ctrl.selectedUser.name; surname = ctrl.selectedUser.surname"
-                ng-disabled="!ctrl.selectedUser">Edit User</button>
+                ng-click="isEdit = true; id = ctrl.selectedUser.id; name = ctrl.userService.selectedUser.name; surname = ctrl.userService.selectedUser.surname"
+                ng-disabled="!ctrl.userService.selectedUser">Edit User</button>
           </div>
         </div>
 

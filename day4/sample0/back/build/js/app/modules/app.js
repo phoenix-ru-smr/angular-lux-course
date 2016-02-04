@@ -4,7 +4,12 @@ var app;
 (function (app) {
     angular
         .module("app", [])
-        .service("UserService", app.UserService)
+        .factory('UserDataManagementService', ['$http', function ($http) {
+            return new app.UserDataManagementService($http);
+        }])
+        .factory('UserService', ['UserDataManagementService', function (userCRUD) {
+            return new app.UserService(userCRUD);
+        }])
         .controller("UserCtrl", app.UserCtrl)
         .filter("UserAdminFilter", app.UserAdminFilter);
 })(app || (app = {}));

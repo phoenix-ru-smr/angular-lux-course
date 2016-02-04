@@ -4,7 +4,12 @@
 module app{
   angular
   .module("app", [])
-  .service("UserService", UserService)
+  .factory('UserDataManagementService', ['$http', function($http) {
+    return new UserDataManagementService($http);
+  }])
+  .factory('UserService', ['UserDataManagementService', function(userCRUD) {
+    return new UserService(userCRUD);
+  }])
   .controller("UserCtrl", UserCtrl)
   .filter("UserAdminFilter", UserAdminFilter);
 }
