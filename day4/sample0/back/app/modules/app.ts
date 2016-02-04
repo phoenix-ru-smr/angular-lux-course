@@ -4,6 +4,7 @@
 module app{
   angular
   .module("app", [])
+  .service("UserService", UserService)
   .controller("UserCtrl", UserCtrl)
   .filter("UserAdminFilter", UserAdminFilter);
 }

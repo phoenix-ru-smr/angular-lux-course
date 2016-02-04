@@ -74,7 +74,7 @@ var app;
                         transformResponse: this.transformUser })
                         .then(function (u) {
                         u = u.data;
-                        found.set(u.data);
+                        found.set(u);
                         _this.selectedUser = found;
                     }, function (error) { console.log(error); });
                 }
@@ -106,6 +106,8 @@ var app;
                 }
             }
         };
+        // https://toddmotto.com/angular-js-dependency-injection-annotation-process
+        UserCtrl.$inject = ['$scope', '$http'];
         return UserCtrl;
     })();
     app.UserCtrl = UserCtrl;
@@ -155,12 +157,24 @@ var app;
     app.User = User;
 })(app || (app = {}));
 
+var app;
+(function (app) {
+    'use strict';
+    var UserService = (function () {
+        function UserService() {
+        }
+        return UserService;
+    })();
+    app.UserService = UserService;
+})(app || (app = {}));
+
 /// <reference path="../../typings/angularjs/angular.d.ts"/>
 /// <reference path="../controllers/userctrl.ts"/>
 var app;
 (function (app) {
     angular
         .module("app", [])
+        .service("UserService", app.UserService)
         .controller("UserCtrl", app.UserCtrl)
         .filter("UserAdminFilter", app.UserAdminFilter);
 })(app || (app = {}));

@@ -74,7 +74,7 @@ var app;
                         transformResponse: this.transformUser })
                         .then(function (u) {
                         u = u.data;
-                        found.set(u.data);
+                        found.set(u);
                         _this.selectedUser = found;
                     }, function (error) { console.log(error); });
                 }
@@ -106,6 +106,8 @@ var app;
                 }
             }
         };
+        // https://toddmotto.com/angular-js-dependency-injection-annotation-process
+        UserCtrl.$inject = ['$scope', '$http'];
         return UserCtrl;
     })();
     app.UserCtrl = UserCtrl;

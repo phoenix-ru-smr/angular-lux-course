@@ -8,6 +8,9 @@ module app{
      private selectedAdmin: User;
      private cnt: number;
 
+// https://toddmotto.com/angular-js-dependency-injection-annotation-process
+     static $inject = ['$scope', '$http'];
+
      constructor(private $scope: ng.IScope, private $http: ng.IHttpService) {
        this.users = [];
        this.reloadUsers();
@@ -80,7 +83,7 @@ module app{
                    transformResponse: this.transformUser})
            .then((u: any)=>{
                u = u.data;
-               found.set(u.data);
+               found.set(u);
                this.selectedUser = found;
            }, (error) => {console.log(error)});
         }
