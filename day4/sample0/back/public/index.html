@@ -13,60 +13,68 @@
   </style>
 </head>
 <body>
-<h1 class="page-header">Odminka</h1>
+      <h1 class="page-header">Odminka</h1>
       <div class="container" ng-controller="UserCtrl as ctrl">
         <div class="row">
-        <div class="col-xs-5 col-sm-5 col-md-4 col-lg-4">
-          <h4>Admins</h4>
-          <select size = 10 style="min-width:100%" ng-model="ctrl.selectedAdmin"
-              ng-options="item.fullname() for item in ctrl.users | UserAdminFilter:true track by item.id">
-          </select>
-          <button class="btn" style="margin-top:5px"
-              ng-click="ctrl.deleteUser(ctrl.selectedAdmin)",
-              ng-disabled="!ctrl.selectedAdmin">Delete Admin</button>
-        </div>
-        <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1" style="padding-top:40px">
-          <button style="min-width:100%" class="btn" ng-click="ctrl.toggleAdmin()" ng-disabled="!ctrl.selectedUser"> < </button>
-          <button style="min-width:100%" class="btn" ng-click="ctrl.toggleUser()" ng-disabled="!ctrl.selectedAdmin"> > </button>
-        </div>
-        <div class="col-xs-5 col-sm-5 col-md-4 col-lg-4">
-          <h4>Non-Admins</h4>
-          <select size = 10 style="min-width:100%" ng-model="ctrl.selectedUser"
-            ng-options="item.fullname() for item in ctrl.users | UserAdminFilter:false track by item.id">
-          </select>
-          <button class="btn" style="margin-top:5px"
-              ng-click="ctrl.deleteUser(ctrl.selectedUser)"
-              ng-disabled="!ctrl.selectedUser">Delete User</button>
-          <button class="btn" style="margin-top:5px"
-              ng-click="isEdit = true; id = ctrl.selectedUser.id; name = ctrl.selectedUser.name; surname = ctrl.selectedUser.surname"
-              ng-disabled="!ctrl.selectedUser">Edit User</button>
-        </div>
-      </div>
-      <form role="form" class="form-horizontal" style="margin-top:30">
-        <div class="form-group" ng-hide="!isEdit" >
-          <label class="control-label col-sm-2 col-md-1 col-xs-3 col-lg-1" for="id">Id:</label>
-          <div class="col-sm-10 col-md-10 col-xs-9 col-lg-10">
-            <input type="text" ng-disabled="true" class="form-control" id="id" ng-model="id"/>
+
+          <div class="col-xs-5 col-sm-5 col-md-4 col-lg-4">
+            <h4>Admins</h4>
+            <select size = 10 style="min-width:100%" ng-model="ctrl.selectedAdmin"
+                ng-options="item.fullname() for item in ctrl.users | UserAdminFilter:true track by item.id">
+            </select>
+            <button class="btn" style="margin-top:5px"
+                ng-click="ctrl.deleteUser(ctrl.selectedAdmin)",
+                ng-disabled="!ctrl.selectedAdmin">Delete Admin</button>
+          </div>
+
+          <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1" style="padding-top:40px">
+            <button style="min-width:100%" class="btn" ng-click="ctrl.toggleAdmin()" ng-disabled="!ctrl.selectedUser"> < </button>
+            <button style="min-width:100%" class="btn" ng-click="ctrl.toggleUser()" ng-disabled="!ctrl.selectedAdmin"> > </button>
+          </div>
+
+
+          <div class="col-xs-5 col-sm-5 col-md-4 col-lg-4">
+            <h4>Non-Admins</h4>
+            <select size = 10 style="min-width:100%" ng-model="ctrl.selectedUser"
+                ng-options="item.fullname() for item in ctrl.users | UserAdminFilter:false track by item.id">
+            </select>
+            <button class="btn" style="margin-top:5px"
+                ng-click="ctrl.deleteUser(ctrl.selectedUser)"
+                ng-disabled="!ctrl.selectedUser">Delete User</button>
+            <button class="btn" style="margin-top:5px"
+                ng-click="isEdit = true; id = ctrl.selectedUser.id; name = ctrl.selectedUser.name; surname = ctrl.selectedUser.surname"
+                ng-disabled="!ctrl.selectedUser">Edit User</button>
           </div>
         </div>
-        <div class="form-group ">
-          <label class="control-label col-sm-2 col-md-1 col-xs-3 col-lg-1" for="name">Name:</label>
-          <div class="col-sm-10 col-md-10 col-xs-9 col-lg-10">
-            <input type="text" class="form-control" id="name" ng-model="name" placeholder="Enter user name"/>
+
+        <form role="form" class="form-horizontal" style="margin-top:30">
+          <div class="form-group" ng-hide="!isEdit" >
+            <label class="control-label col-sm-2 col-md-1 col-xs-3 col-lg-1" for="id">Id:</label>
+            <div class="col-sm-10 col-md-10 col-xs-9 col-lg-10">
+              <input type="text" ng-disabled="true" class="form-control" id="id" ng-model="id"/>
+            </div>
           </div>
-        </div>
-        <div class="form-group">
-          <label for="surname" class="control-label col-sm-2 col-md-1 col-xs-3 col-lg-1">Surname:</label>
-          <div class="col-sm-10 col-md-10 col-xs-9 col-lg-10">
-            <input type="text" class="form-control" id="surname" ng-model="surname" placeholder="Enter user surname"/>
+
+          <div class="form-group ">
+            <label class="control-label col-sm-2 col-md-1 col-xs-3 col-lg-1" for="name">Name:</label>
+            <div class="col-sm-10 col-md-10 col-xs-9 col-lg-10">
+              <input type="text" class="form-control" id="name" ng-model="name" placeholder="Enter user name"/>
+            </div>
           </div>
-        </div>
+
+          <div class="form-group">
+            <label for="surname" class="control-label col-sm-2 col-md-1 col-xs-3 col-lg-1">Surname:</label>
+            <div class="col-sm-10 col-md-10 col-xs-9 col-lg-10">
+              <input type="text" class="form-control" id="surname" ng-model="surname" placeholder="Enter user surname"/>
+            </div>
+          </div>
 
           <button class="btn btn-default" style="margin-left:0px"
               ng-click="ctrl.addUser(id, name, surname, isEdit); isEdit = false; name=''; surname='';"
               ng-disabled="!name || !surname"><span>{{isEdit ? 'edit user' : 'add user'}}</span></button>
 
-      </form>
+        </form>
+
       </div>
 
   <script src="js/app/all.js"></script>
