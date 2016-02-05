@@ -18,7 +18,6 @@ var users;
 function mkusr(id) {
   return {"id": id, "name": "name" + id, "surname": "surname" + id, "admin": false};
 }
-var ids;
 // Connect to the db
 MongoClient.connect("mongodb://localhost:27017/angular-course", function(err, db) {
   if(err) {
@@ -29,9 +28,6 @@ MongoClient.connect("mongodb://localhost:27017/angular-course", function(err, db
         console.log('collection users already exists, using it');
         db.createCollection('users', function(err, collection) {
           users = collection;
-          users.findOne({$query:{},$orderby:{id:-1}}).then(function(a) {
-            ids = a.id + 1;
-          });
         });
 
       } else {
@@ -40,9 +36,6 @@ MongoClient.connect("mongodb://localhost:27017/angular-course", function(err, db
         for (var i = 0; i < 15; i++) {
           users.insert(mkusr(i));
         }
-        users.findOne({$query:{},$orderby:{id:-1}}).then(function(a) {
-          ids = a.id + 1;
-        });
       }
     });
   }
@@ -70,13 +63,23 @@ app.get("/api/users", function(req,res) {
     if (err) {
       console.log(err);
     }
-    console.log(items);
     res.json(items);
   });
 });
 app.get("/api/users/:id", function(req,res) {
-  var id = req.params.id;
-  return res.json(usrById(id));
+  var userId = Number(req.params.id);
+  users.find({id: userId}).limit(1).each(function(err, data) {
+    if (err) {
+      console.log(err);
+      res.status(500).json(err);
+    } else {
+      if (data == null) {
+        res.status(404),end();
+      } else {
+        res.json(data);
+      }
+    }
+  });
 });
 app.post("/api/users", function(req,res) {
   var user = req.body;
@@ -99,49 +102,8 @@ app.delete("/api/users/:id", function(req,res) {
 });
 
 
-
-
-var todos = [{id:0, name:"Test"}];
-app.get("/api/todos", function(req,res) {
-  return res.json(todos);
-});
-app.get("/api/todos/:id", function(req,res) {
-  var id = req.params.id;
-  return res.json(todos.filter(function(item) {
-    return item.id == id;
-  }));
-});
-app.post("/api/todos", function(req,res) {
-  var todo = req.body;
-  todo.id = todos.length + 1;
-  todos.push(todo);
-  return res.json(todo);
-});
-app.put("/api/todos/:id", function(req,res) {
-  var todo = req.body;
-  var id = req.params.id;
-  var t = todos.filter(function(item) {
-    return item.id == id;
-  });
-  if (t.length > 0) {
-    t[0].id = todo.id;
-    t[0].name = todo.name;
-    return res.json(t[0]);
-  }
-  return res.json({});
-});
-app.delete("/api/todos/:id", function(req,res) {
-  var id = req.params.id;
-  var t = todos.filter(function(item) {
-    return item.id == id;
-  });
-  if (t.length > 0) {
-    var item = t[0];
-    var index = todos.indexOf(item);
-    todos.splice(index, 1);
-  }
-  return res.status(200).end();
-});
-
+app.get("*", function(req, res) {
+  return res.sendFile(__dirname + '/public/index.html');
+})
 
 app.listen(8080);

@@ -5,19 +5,25 @@ module app{
    export class UserCtrl {
 
 // https://toddmotto.com/angular-js-dependency-injection-annotation-process
-     static $inject = ['UserService'];
+     static $inject = ['UserService', 'flow', '$location'];
 
-     constructor(public userService: UserService) {
-       this.userService.reloadUsers();
+     constructor(private userService: UserService, public flow: FlowModel,
+       private $location: ng.ILocationService
+      ) {
+     }
+
+     public edit(): void {
+        this.$location.url("/user/" + this.flow.selectedUser.id);
+     }
+
+     public create(): void {
+        this.$location.url("/new/");
      }
 
      public toggleAdmin(user: User): void {
        this.userService.toggleAdmin(user);
      }
 
-     public addUser(id: number, name: string, surname: string, isEdit: boolean): void {
-          this.userService.addUser(id, name, surname, isEdit);
-     }
 
      public deleteUser(user: User): void {
        this.userService.deleteUser(user);

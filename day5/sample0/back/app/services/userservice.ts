@@ -2,94 +2,82 @@ module app {
   'use strict'
 
   export class UserService {
-    private users: Array<User>;
-    private selectedUser: User;
-    private selectedAdmin: User;
-
 // https://toddmotto.com/angular-js-dependency-injection-annotation-process
-    static $inject = ['UserDataManagementService'];
+    static $inject = ['UserDataManagementService', 'flow'];
 
-    constructor(private userCRUD: UserDataManagementService) {
-      this.users = [];
+    constructor(private userCRUD: UserDataManagementService, private flow: FlowModel) {
       this.reloadUsers();
+    }
+
+    public getUser(id: number): User {
+      return this.flow.findUser(new User(id));
     }
 
     public reloadUsers(): void {
       this.userCRUD.getUsers()
       .then((data: User[]) => {
-        this.users = data;
+        this.flow.users = data;
         this.initSelections();
       });
     }
 
 
    public toggleAdmin(user: User): void {
-      user = this.findUser(user);
+      user = this.flow.findUser(user);
       if (user) {
         this.userCRUD.updateUser(user.toggleAdmin())
           .then((u: User) => {
             user.set(u);
             this.initSelections();
             if (user.admin) {
-              this.selectedAdmin = user;
+              this.flow.selectedAdmin = user;
             } else {
-              this.selectedUser = user;
+              this.flow.selectedUser = user;
             }
           });
       }
     }
 
-    private findUser(user: User): User {
-      if (user) {
-        var found = this.users.filter(item => item.id == user.id);
-        if (found.length > 0) {
-          return found[0];
-        } else {
-          return undefined;
-        }
-      } else {
-        return user;
-      }
 
-    }
 
     private initSelections(): void {
-      this.selectedAdmin = this.users.filter(item => item.admin)[0];
-      this.selectedUser = this.users.filter(item => !item.admin)[0];
+      this.flow.selectedAdmin = this.flow.users.filter(item => item.admin)[0];
+      this.flow.selectedUser = this.flow.users.filter(item => !item.admin)[0];
     }
 
-    public addUser(id: number, name: string, surname: string, isEdit: boolean): void {
-      if (isEdit) {
-        console.log('update user:' + JSON.stringify(new User(id, name, surname)));
-        var found = this.findUser(new User(id));
-        if (found) {
-          this.userCRUD.updateUser(new User(id, name, surname, found.admin))
-            .then((u: User)=>{
-              found.set(u);
-              this.selectedUser = found;
-            });
-       }
-
-      } else {
-        console.log('create new user:' + JSON.stringify(new User(0, name, surname, false)));
-        this.userCRUD.createUser(new User(0, name, surname, false))
+    public edit(user: User):void {
+      console.log('update user:' + JSON.stringify(user));
+      var found = this.flow.findUser(user);
+      if (found) {
+        this.userCRUD.updateUser(new User(user.id, user.name, user.surname, found.admin))
           .then((u: User)=>{
-             this.users.push(u);
-             this.selectedUser = u;
-           });
+            found.set(u);
+            this.flow.selectedUser = found;
+          });
      }
     }
+
+    public create(user: User): void {
+      console.log('create new user:' + JSON.stringify(user));
+      this.userCRUD.createUser(user)
+        .then((u: User)=>{
+           this.flow.users.push(u);
+           this.flow.selectedUser = u;
+         });
+    }
+
+
 
     public deleteUser(user: User): void {
       console.log('deleting:' + JSON.stringify(user));
       if (user) {
-        var del = this.findUser(user);
+        var del = this.flow.findUser(user);
         if (del) {
           this.userCRUD.deleteUser(del)
            .then((u: any)=>{
              console.log("got on delete: " + JSON.stringify(u));
-             var idx = this.users.indexOf(del);
-             this.users.splice(idx, 1);
+             var idx = this.flow.users.indexOf(del);
+             this.flow.users.splice(idx, 1);
              this.initSelections();
            }, (error) => {console.log(error)});
         }

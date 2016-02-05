@@ -2,94 +2,82 @@ var app;
 (function (app) {
     'use strict';
     var UserService = (function () {
-        function UserService(userCRUD) {
+        function UserService(userCRUD, flow) {
             this.userCRUD = userCRUD;
-            this.users = [];
+            this.flow = flow;
             this.reloadUsers();
         }
+        UserService.prototype.getUser = function (id) {
+            return this.flow.findUser(new app.User(id));
+        };
         UserService.prototype.reloadUsers = function () {
             var _this = this;
             this.userCRUD.getUsers()
                 .then(function (data) {
-                _this.users = data;
+                _this.flow.users = data;
                 _this.initSelections();
             });
         };
         UserService.prototype.toggleAdmin = function (user) {
             var _this = this;
-            user = this.findUser(user);
+            user = this.flow.findUser(user);
             if (user) {
                 this.userCRUD.updateUser(user.toggleAdmin())
                     .then(function (u) {
                     user.set(u);
                     _this.initSelections();
                     if (user.admin) {
-                        _this.selectedAdmin = user;
+                        _this.flow.selectedAdmin = user;
                     }
                     else {
-                        _this.selectedUser = user;
+                        _this.flow.selectedUser = user;
                     }
                 });
-            }
-        };
-        UserService.prototype.findUser = function (user) {
-            if (user) {
-                var found = this.users.filter(function (item) { return item.id == user.id; });
-                if (found.length > 0) {
-                    return found[0];
-                }
-                else {
-                    return undefined;
-                }
-            }
-            else {
-                return user;
             }
         };
         UserService.prototype.initSelections = function () {
-            this.selectedAdmin = this.users.filter(function (item) { return item.admin; })[0];
-            this.selectedUser = this.users.filter(function (item) { return !item.admin; })[0];
+            this.flow.selectedAdmin = this.flow.users.filter(function (item) { return item.admin; })[0];
+            this.flow.selectedUser = this.flow.users.filter(function (item) { return !item.admin; })[0];
         };
-        UserService.prototype.addUser = function (id, name, surname, isEdit) {
+        UserService.prototype.edit = function (user) {
             var _this = this;
-            if (isEdit) {
-                console.log('update user:' + JSON.stringify(new app.User(id, name, surname)));
-                var found = this.findUser(new app.User(id));
-                if (found) {
-                    this.userCRUD.updateUser(new app.User(id, name, surname, found.admin))
-                        .then(function (u) {
-                        found.set(u);
-                        _this.selectedUser = found;
-                    });
-                }
-            }
-            else {
-                console.log('create new user:' + JSON.stringify(new app.User(0, name, surname, false)));
-                this.userCRUD.createUser(new app.User(0, name, surname, false))
+            console.log('update user:' + JSON.stringify(user));
+            var found = this.flow.findUser(user);
+            if (found) {
+                this.userCRUD.updateUser(new app.User(user.id, user.name, user.surname, found.admin))
                     .then(function (u) {
-                    _this.users.push(u);
-                    _this.selectedUser = u;
+                    found.set(u);
+                    _this.flow.selectedUser = found;
                 });
             }
+        };
+        UserService.prototype.create = function (user) {
+            var _this = this;
+            console.log('create new user:' + JSON.stringify(user));
+            this.userCRUD.createUser(user)
+                .then(function (u) {
+                _this.flow.users.push(u);
+                _this.flow.selectedUser = u;
+            });
         };
         UserService.prototype.deleteUser = function (user) {
             var _this = this;
             console.log('deleting:' + JSON.stringify(user));
             if (user) {
-                var del = this.findUser(user);
+                var del = this.flow.findUser(user);
                 if (del) {
                     this.userCRUD.deleteUser(del)
                         .then(function (u) {
                         console.log("got on delete: " + JSON.stringify(u));
-                        var idx = _this.users.indexOf(del);
-                        _this.users.splice(idx, 1);
+                        var idx = _this.flow.users.indexOf(del);
+                        _this.flow.users.splice(idx, 1);
                         _this.initSelections();
                     }, function (error) { console.log(error); });
                 }
             }
         };
         // https://toddmotto.com/angular-js-dependency-injection-annotation-process
-        UserService.$inject = ['UserDataManagementService'];
+        UserService.$inject = ['UserDataManagementService', 'flow'];
         return UserService;
     })();
     app.UserService = UserService;

@@ -1,0 +1,33 @@
+<form name="editForm" role="form" class="form-horizontal" style="margin-top:30">
+  <div class="form-group" >
+    <label class="control-label col-sm-2 col-md-1 col-xs-3 col-lg-1" for="id">Id:</label>
+    <div class="col-sm-10 col-md-10 col-xs-9 col-lg-10">
+      <input type="text" ng-disabled="true" class="form-control" id="id" ng-model="ctrl.user.id"/>
+    </div>
+  </div>
+  <div class="form-group ">
+    <label class="control-label col-sm-2 col-md-1 col-xs-3 col-lg-1" for="name">Name:</label>
+    <div class="col-sm-10 col-md-10 col-xs-9 col-lg-10">
+      <input type="text" class="form-control" id="name"
+        ng-model="ctrl.user.name"
+        ng-minlength="5"
+        name="name"
+        ng-maxlength="20" placeholder="Enter user name"/>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label for="surname" class="control-label col-sm-2 col-md-1 col-xs-3 col-lg-1">Surname:</label>
+    <div class="col-sm-10 col-md-10 col-xs-9 col-lg-10">
+      <input type="text" class="form-control" id="surname"
+      ng-minlength="5"
+      name="surname"
+      ng-maxlength="20" ng-model="ctrl.user.surname" placeholder="Enter user surname"/>
+    </div>
+  </div>
+
+  <button class="btn btn-default" style="margin-left:0px"
+      ng-click="ctrl.save()"
+      ng-disabled="!ctrl.user.name || !ctrl.user.surname"><span>edit user</span></button>
+
+</form>

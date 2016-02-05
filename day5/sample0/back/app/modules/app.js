@@ -1,9 +1,7 @@
-/// <reference path="../../typings/angularjs/angular.d.ts"/>
-/// <reference path="../controllers/userctrl.ts"/>
 var app;
 (function (app) {
     angular
-        .module("app", ['ngRoute'])
+        .module("app", ['ngRoute', 'ngMessages'])
         .service("flow", app.FlowModel)
         .factory('UserDataManagementService', ['$http', function ($http) {
             return new app.UserDataManagementService($http);

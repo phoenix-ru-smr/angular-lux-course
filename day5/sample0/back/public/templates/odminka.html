@@ -1,0 +1,40 @@
+<div class="container">
+  <div class="row">
+
+    <div class="col-xs-5 col-sm-5 col-md-4 col-lg-4">
+      <h4>Admins</h4>
+      <select size = 10 style="min-width:100%" ng-model="ctrl.flow.selectedAdmin"
+          ng-options="item.fullname() for item in ctrl.flow.users | UserAdminFilter:true track by item.id">
+      </select>
+      <button class="btn" style="margin-top:5px"
+          ng-click="ctrl.deleteUser(ctrl.flow.selectedAdmin)",
+          ng-disabled="!ctrl.flow.selectedAdmin">Delete Admin</button>
+    </div>
+
+    <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1" style="padding-top:40px">
+      <button style="min-width:100%" class="btn"
+          ng-click="ctrl.toggleAdmin(ctrl.flow.selectedUser)" ng-disabled="!ctrl.flow.selectedUser"> < </button>
+      <button style="min-width:100%" class="btn"
+          ng-click="ctrl.toggleAdmin(ctrl.flow.selectedAdmin)" ng-disabled="!ctrl.flow.selectedAdmin"> > </button>
+    </div>
+
+
+    <div class="col-xs-5 col-sm-5 col-md-4 col-lg-4">
+      <h4>Non-Admins</h4>
+      <select size = 10 style="min-width:100%" ng-model="ctrl.flow.selectedUser"
+          ng-options="item.fullname() for item in ctrl.flow.users | UserAdminFilter:false track by item.id">
+      </select>
+      <button class="btn" style="margin-top:5px"
+          ng-click="ctrl.deleteUser(ctrl.flow.selectedUser)"
+          ng-disabled="!ctrl.flow.selectedUser">Delete User</button>
+      <button class="btn" style="margin-top:5px"
+          ng-click="ctrl.edit()"
+          ng-disabled="!ctrl.flow.selectedUser">Edit User</button>
+    </div>
+
+  </div>
+  <button class="btn" style="margin-top:5px"
+      ng-click="ctrl.create()">New User</button>
+
+
+</div>
