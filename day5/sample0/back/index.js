@@ -10,33 +10,51 @@ app.use(bodyParser.json());                                     // parse applica
 app.use(bodyParser.json({ type: 'application/vnd.api+json' })); // parse application/vnd.api+json as json
 
 
+// Retrieve
+var MongoClient = require('mongodb').MongoClient;
+
+var users;
+
 function mkusr(id) {
   return {"id": id, "name": "name" + id, "surname": "surname" + id, "admin": false};
 }
+var ids;
+// Connect to the db
+MongoClient.connect("mongodb://localhost:27017/angular-course", function(err, db) {
+  if(err) {
+    console.log(err);
+  } else {
+    db.createCollection('users', {strict:true}, function(err, collection) {
+      if (err) {
+        console.log('collection users already exists, using it');
+        db.createCollection('users', function(err, collection) {
+          users = collection;
+          users.findOne({$query:{},$orderby:{id:-1}}).then(function(a) {
+            ids = a.id + 1;
+          });
+        });
 
-var users = [
-  mkusr(0),
-  mkusr(1),
-  mkusr(2),
-  mkusr(3),
-  mkusr(4),
-  mkusr(5),
-  mkusr(6),
-  mkusr(7),
-  mkusr(8),
-  mkusr(9),
-  mkusr(10),
-  mkusr(11),
-  mkusr(12),
-  mkusr(13),
-  mkusr(14),
-  mkusr(15),
-]
-var ids = users.length + 1;
+      } else {
+        console.log('collection users does not exists, fill data');
+        users = collection;
+        for (var i = 0; i < 15; i++) {
+          users.insert(mkusr(i));
+        }
+        users.findOne({$query:{},$orderby:{id:-1}}).then(function(a) {
+          ids = a.id + 1;
+        });
+      }
+    });
+  }
+
+});
+
+
+
 function newid() {
-  var i = ids;
-  ids = ids + 1;
-  return i;
+  return users.findOne({$query:{},$orderby:{id:-1}}).then(function(a) {
+    return a.id + 1;
+  });
 }
 
 function usrById(id) {
@@ -48,7 +66,13 @@ function usrById(id) {
 }
 
 app.get("/api/users", function(req,res) {
-  return res.json(users);
+  users.find().toArray(function(err, items) {
+    if (err) {
+      console.log(err);
+    }
+    console.log(items);
+    res.json(items);
+  });
 });
 app.get("/api/users/:id", function(req,res) {
   var id = req.params.id;
@@ -56,29 +80,21 @@ app.get("/api/users/:id", function(req,res) {
 });
 app.post("/api/users", function(req,res) {
   var user = req.body;
-  user.id = newid();
-  users.push(user);
-  return res.json(user);
+  newid().then(function(uid) {
+    user.id = uid;
+    users.insert(user);
+    res.json(user);
+  })
 });
 app.put("/api/users/:id", function(req,res) {
   var user = req.body;
-  var id = req.params.id;
-  var t = usrById(id);
-  if (t) {
-    t.name = user.name;
-    t.surname = user.surname;
-    t.admin = user.admin;
-    return res.json(t);
-  }
-  return res.json({});
+  var uid = Number(req.params.id);
+  users.update({id:uid}, {$set:user}, {w:1}, function(err, result) {});
+  return res.json(user);
 });
 app.delete("/api/users/:id", function(req,res) {
-  var id = req.params.id;
-  var t = usrById(id);
-  if (t) {
-    var index = users.indexOf(t);
-    users.splice(index, 1);
-  }
+  var userId = Number(req.params.id);
+  users.remove({id: userId});
   return res.status(200).end();
 });
 

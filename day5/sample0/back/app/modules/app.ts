@@ -11,5 +11,9 @@ module app{
     return new UserService(userCRUD);
   }])
   .controller("UserCtrl", UserCtrl)
-  .filter("UserAdminFilter", UserAdminFilter);
+  .filter("UserAdminFilter", UserAdminFilter)
+  .config(['$routeProvider', '$locationProvider', ($routeProvider: ng.route.IRouteProvider,
+          $locationProvider: ng.ILocationProvider)=>{
+            $locationProvider.html5Mode(true);
+          }]);
 }
