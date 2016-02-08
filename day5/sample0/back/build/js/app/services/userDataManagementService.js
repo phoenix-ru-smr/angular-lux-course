@@ -5,8 +5,8 @@ var app;
         function UserDataManagementService($http) {
             this.$http = $http;
         }
-        UserDataManagementService.prototype.getUsers = function () {
-            return this.$http.get("/api/users", {
+        UserDataManagementService.prototype.getUsers = function (user) {
+            return this.$http.get("/api/users" + (user ? '?name=' + user.name + '&surname=' + user.surname : ''), {
                 transformResponse: function (data, headers) {
                     data = JSON.parse(data);
                     var a = [];

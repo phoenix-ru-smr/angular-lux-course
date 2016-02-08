@@ -59,7 +59,9 @@ function usrById(id) {
 }
 
 app.get("/api/users", function(req,res) {
-  users.find().toArray(function(err, items) {
+  var pname = req.query.name;
+  var psurname = req.query.surname;
+  users.find(pname || psurname ? {name: pname, surname: psurname} : {}).toArray(function(err, items) {
     if (err) {
       console.log(err);
     }
@@ -71,12 +73,12 @@ app.get("/api/users/:id", function(req,res) {
   users.find({id: userId}).limit(1).each(function(err, data) {
     if (err) {
       console.log(err);
-      res.status(500).json(err);
+      res.status(500).json(err).end();
     } else {
       if (data == null) {
-        res.status(404),end();
+        res.status(404).end();
       } else {
-        res.json(data);
+        res.json(data).end();
       }
     }
   });
@@ -86,14 +88,14 @@ app.post("/api/users", function(req,res) {
   newid().then(function(uid) {
     user.id = uid;
     users.insert(user);
-    res.json(user);
+    res.json(user).end();
   })
 });
 app.put("/api/users/:id", function(req,res) {
   var user = req.body;
   var uid = Number(req.params.id);
   users.update({id:uid}, {$set:user}, {w:1}, function(err, result) {});
-  return res.json(user);
+  return res.json(user).end();
 });
 app.delete("/api/users/:id", function(req,res) {
   var userId = Number(req.params.id);

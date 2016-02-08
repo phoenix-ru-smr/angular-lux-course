@@ -8,14 +8,17 @@ var app;
             this.flow = flow;
             this.$location = $location;
         }
-        UserCtrl.prototype.edit = function () {
-            this.$location.url("/user/" + this.flow.selectedUser.id);
+        UserCtrl.prototype.edit = function (id, back) {
+            this.$location.url("/user/" + id + "?back=" + back);
         };
-        UserCtrl.prototype.create = function () {
-            this.$location.url("/new/");
+        UserCtrl.prototype.create = function (back) {
+            this.$location.url("/new/?back=" + back);
         };
         UserCtrl.prototype.toggleAdmin = function (user) {
             this.userService.toggleAdmin(user);
+        };
+        UserCtrl.prototype.add = function () {
+            this.userService.create(new app.User(undefined, 'lalala', 'LALALA', false));
         };
         UserCtrl.prototype.deleteUser = function (user) {
             this.userService.deleteUser(user);

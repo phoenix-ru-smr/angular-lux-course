@@ -1,0 +1,30 @@
+
+<panel title="ctrl.flow.users.length" add="ctrl.add()">
+  Total: {{ctrl.flow.users.length}}
+</panel>
+<table class="table table-striped">
+  <thead>
+    <th>Name</th>
+    <th>Surname</th>
+    <th>Admin</th>
+  </thead>
+
+  <tr ng-repeat="item in ctrl.flow.users">
+    <td>{{item.name}}</td>
+    <td>
+      {{item.surname}}
+    </td>
+    <td>
+      <div class="checkbox">
+        <label><input type="checkbox" ng-model="item.admin" value="item.admin">{{item.admin ? 'yes' : 'no'}}</label>
+        <span ng-click="ctrl.edit(item.id, '/users')" class="glyphicon glyphicon-pencil"></span>
+
+      </div>
+    </td>
+  </tr>
+  <tfoot>
+    <tr colspan="3">
+      <button type="button" class="btn btn-default" style='width:100%' ng-click="ctrl.create('/users')">Create New</button>
+    </tr>
+  </tfoot>
+</table>

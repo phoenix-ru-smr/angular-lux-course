@@ -9,8 +9,8 @@ module app {
     constructor(private $http: ng.IHttpService) {
     }
 
-    public getUsers(): ng.IPromise<User[]> {
-      return this.$http.get("/api/users", {
+    public getUsers(user: User): ng.IPromise<User[]> {
+      return this.$http.get("/api/users" + (user? '?name=' + user.name + '&surname=' + user.surname : ''), {
                transformResponse: function (data, headers) {
                  data = JSON.parse(data);
                    var a = [];

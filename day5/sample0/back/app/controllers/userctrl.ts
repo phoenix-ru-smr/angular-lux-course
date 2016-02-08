@@ -12,16 +12,20 @@ module app{
       ) {
      }
 
-     public edit(): void {
-        this.$location.url("/user/" + this.flow.selectedUser.id);
+     public edit(id, back): void {
+        this.$location.url("/user/" + id + "?back=" + back);
      }
 
-     public create(): void {
-        this.$location.url("/new/");
+     public create(back): void {
+        this.$location.url("/new/?back=" + back);
      }
 
      public toggleAdmin(user: User): void {
        this.userService.toggleAdmin(user);
+     }
+
+     public add(): void {
+       this.userService.create(new User(undefined, 'lalala', 'LALALA', false));
      }
 
 

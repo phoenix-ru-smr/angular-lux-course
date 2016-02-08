@@ -14,7 +14,7 @@ module app {
     }
 
     public reloadUsers(): void {
-      this.userCRUD.getUsers()
+      this.userCRUD.getUsers(undefined)
       .then((data: User[]) => {
         this.flow.users = data;
         this.initSelections();
@@ -55,6 +55,19 @@ module app {
             this.flow.selectedUser = found;
           });
      }
+    }
+
+    public existsAnother(user: User): ng.IPromise<boolean> {
+      return this.userCRUD.getUsers(user).then((users: User[]) =>{
+        if (users.length > 1) {
+          return true;
+        } else if (users.length == 1) {
+          var exp = angular.isUndefined(user.id) || (user.id != users[0].id);
+          return exp;
+        } else {
+          return false;
+        }
+      });
     }
 
     public create(user: User): void {

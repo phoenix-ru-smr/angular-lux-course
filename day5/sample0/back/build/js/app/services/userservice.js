@@ -12,7 +12,7 @@ var app;
         };
         UserService.prototype.reloadUsers = function () {
             var _this = this;
-            this.userCRUD.getUsers()
+            this.userCRUD.getUsers(undefined)
                 .then(function (data) {
                 _this.flow.users = data;
                 _this.initSelections();
@@ -50,6 +50,20 @@ var app;
                     _this.flow.selectedUser = found;
                 });
             }
+        };
+        UserService.prototype.existsAnother = function (user) {
+            return this.userCRUD.getUsers(user).then(function (users) {
+                if (users.length > 1) {
+                    return true;
+                }
+                else if (users.length == 1) {
+                    var exp = angular.isUndefined(user.id) || (user.id != users[0].id);
+                    return exp;
+                }
+                else {
+                    return false;
+                }
+            });
         };
         UserService.prototype.create = function (user) {
             var _this = this;

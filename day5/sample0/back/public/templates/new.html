@@ -1,36 +1,28 @@
-<div ng-form ="ctrl.form" novalidate class="form-horizontal" style="margin-top:30"
-ng-submit="ctrl.save()">
+<div ng-form="ctrl.form" novalidate class="form-horizontal" style="margin-top:30">
   <div class="form-group ">
     <label class="control-label col-sm-2 col-md-1 col-xs-3 col-lg-1" for="name">Name:</label>
     <div class="col-sm-10 col-md-10 col-xs-9 col-lg-10">
-      <input type="text" class="form-control" placeholder="Enter user name"
-        ng-minlength="5" ng-maxlength="20" required
-        name="fname" ng-model="ctrl.user.name"
-       />
+      <input type="text" class="form-control" placeholder="Enter user name" ng-minlength="3" ng-maxlength="20" required name="fname" ng-model="ctrl.user.name" ng-model-options="{ debounce: 200 }"/>
     </div>
   </div>
-<div class="text-danger" ng-messages="ctrl.form.fname.$error">
-  <span ng-message="required">Please enter name</span>
-  <span ng-message="ng-minlength">Min name length is 5</span>
-  <span ng-message="ng-maxlength">Max name length is 20</span>
-</div>
+  <div class="text-danger" ng-messages="ctrl.form.fname.$error">
+    <span ng-message="required">Please enter name</span>
+    <span ng-message="minlength">Min name length is 5</span>
+    <span ng-message="maxlength">Max name length is 20</span>
+    <span ng-message="unique">this user already exists</span>
+  </div>
   <div class="form-group">
     <label for="surname" class="control-label col-sm-2 col-md-1 col-xs-3 col-lg-1">Surname:</label>
     <div class="col-sm-10 col-md-10 col-xs-9 col-lg-10">
-      <input type="text" class="form-control" placeholder="Enter user surname"
-        ng-minlength="5" ng-maxlength="20" required
-        name = "ssurname" ng-model="ctrl.user.surname"
-      />
+      <input type="text" class="form-control" placeholder="Enter user surname" ng-minlength="3" ng-maxlength="20" required name="ssurname" ng-model="ctrl.user.surname" ng-model-options="{ debounce: 200 }"/>
     </div>
   </div>
-<div class="text-danger" ng-messages="ctrl.form.ssurname.$error">
-  <span ng-message="required">Please enter surname</span>
-  <span ng-message="ng-minlength">Min surname length is 5</span>
-  <span ng-message="ng-maxlength">Max surname length is 20</span>
-</div>
-  <input type="submit" class="btn btn-default" style="margin-left:0px"
-      value="add user"></input>
+  <div class="text-danger" ng-messages="ctrl.form.ssurname.$error">
+    <span ng-message="required">Please enter surname</span>
+    <span ng-message="minlength">Min surname length is 5</span>
+    <span ng-message="maxlength">Max surname length is 20</span>
+    <span ng-message="unique">this user already exists</span>
+  </div>
+  <input type="submit" class="btn btn-default" style="margin-left:0px" value="add user" ng-click="ctrl.save()" ng-disabled="!(ctrl.form.$valid)"></input>
 
 </div>
-
-<pre>{{ctrl.form | json}}</pre>

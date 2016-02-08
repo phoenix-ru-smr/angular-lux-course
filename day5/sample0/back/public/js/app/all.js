@@ -3,19 +3,56 @@ var app;
 (function (app) {
     "use strict";
     var EditCtrl = (function () {
-        function EditCtrl(userService, flow, $routeParams, $location) {
+        function EditCtrl($scope, userService, flow, $routeParams, $location, $q) {
+            this.$scope = $scope;
             this.userService = userService;
             this.flow = flow;
             this.$routeParams = $routeParams;
             this.$location = $location;
+            this.$q = $q;
             this.user = userService.getUser(this.$routeParams['id']);
+            //  console.log(this.$routeParams);
+            this.back = this.$routeParams['back'];
+            $scope.$watch('ctrl.form', this.attachValidators.bind(this));
         }
         EditCtrl.prototype.save = function () {
             this.userService.edit(this.user);
-            this.$location.url("/odminka");
+            this.$location.url(this.back);
+        };
+        EditCtrl.prototype.attachValidators = function () {
+            var _this = this;
+            //  console.log(this.form);
+            this.form['fname'].$asyncValidators.unique = function (modelValue, viewValue) {
+                var u = new app.User(_this.user.id, viewValue, _this.form['ssurname'].$viewValue, _this.user.admin);
+                return _this.userService.existsAnother(u).then(function (exists) {
+                    if (exists) {
+                        if (!angular.isDefined(_this.form['ssurname'].$error['unique'])) {
+                            _this.form['ssurname'].$error['unique'] = true;
+                        }
+                        return _this.$q.reject('exists');
+                    }
+                    if (_this.form['ssurname'].$error['unique']) {
+                        _this.form['ssurname'].$validate();
+                    }
+                });
+            };
+            this.form['ssurname'].$asyncValidators.unique = function (modelValue, viewValue) {
+                var u = new app.User(_this.user.id, _this.form['fname'].$viewValue, viewValue, _this.user.admin);
+                return _this.userService.existsAnother(u).then(function (exists) {
+                    if (exists) {
+                        if (!angular.isDefined(_this.form['fname'].$error['unique'])) {
+                            _this.form['fname'].$error['unique'] = true;
+                        }
+                        return _this.$q.reject('exists');
+                    }
+                    if (_this.form['fname'].$error['unique']) {
+                        _this.form['fname'].$validate();
+                    }
+                });
+            };
         };
         // https://toddmotto.com/angular-js-dependency-injection-annotation-process
-        EditCtrl.$inject = ['UserService', 'flow'];
+        EditCtrl.$inject = ['$scope', 'UserService', 'flow', '$routeParams', '$location', '$q'];
         return EditCtrl;
     })();
     app.EditCtrl = EditCtrl;
@@ -26,22 +63,70 @@ var app;
 (function (app) {
     "use strict";
     var NewUserCtrl = (function () {
-        function NewUserCtrl(userService, flow, $routeParams, $location) {
+        function NewUserCtrl($scope, userService, flow, $routeParams, $location, $q) {
+            this.$scope = $scope;
             this.userService = userService;
             this.flow = flow;
             this.$routeParams = $routeParams;
             this.$location = $location;
+            this.$q = $q;
             this.user = new app.User(undefined, '', '', false);
+            this.back = this.$routeParams['back'];
+            $scope.$watch('ctrl.form', this.attachValidators.bind(this));
         }
         NewUserCtrl.prototype.save = function () {
             this.userService.create(this.user);
-            this.$location.url("/odminka");
+            this.$location.url(this.back);
+        };
+        NewUserCtrl.prototype.attachValidators = function () {
+            var _this = this;
+            //  console.log(this.form);
+            this.form['fname'].$asyncValidators.unique = function (modelValue, viewValue) {
+                var u = new app.User(undefined, viewValue, _this.form['ssurname'].$viewValue, _this.user.admin);
+                return _this.userService.existsAnother(u).then(function (exists) {
+                    if (exists) {
+                        if (!angular.isDefined(_this.form['ssurname'].$error['unique'])) {
+                            _this.form['ssurname'].$error['unique'] = true;
+                        }
+                        return _this.$q.reject('exists');
+                    }
+                    if (_this.form['ssurname'].$error['unique']) {
+                        _this.form['ssurname'].$validate();
+                    }
+                });
+            };
+            this.form['ssurname'].$asyncValidators.unique = function (modelValue, viewValue) {
+                var u = new app.User(undefined, _this.form['fname'].$viewValue, viewValue, _this.user.admin);
+                return _this.userService.existsAnother(u).then(function (exists) {
+                    if (exists) {
+                        if (!angular.isDefined(_this.form['fname'].$error['unique'])) {
+                            _this.form['fname'].$error['unique'] = true;
+                        }
+                        return _this.$q.reject('exists');
+                    }
+                    if (_this.form['fname'].$error['unique']) {
+                        _this.form['fname'].$validate();
+                    }
+                });
+            };
         };
         // https://toddmotto.com/angular-js-dependency-injection-annotation-process
-        NewUserCtrl.$inject = ['UserService', 'flow'];
+        NewUserCtrl.$inject = ['$scope', 'UserService', 'flow', '$routeParams', '$location', '$q'];
         return NewUserCtrl;
     })();
     app.NewUserCtrl = NewUserCtrl;
+})(app || (app = {}));
+
+var app;
+(function (app) {
+    'use strict';
+    var PanelCtrl = (function () {
+        function PanelCtrl() {
+            console.log(this.title);
+        }
+        return PanelCtrl;
+    })();
+    app.PanelCtrl = PanelCtrl;
 })(app || (app = {}));
 
 /// <reference path="../../typings/angularjs/angular.d.ts"/>
@@ -54,14 +139,17 @@ var app;
             this.flow = flow;
             this.$location = $location;
         }
-        UserCtrl.prototype.edit = function () {
-            this.$location.url("/user/" + this.flow.selectedUser.id);
+        UserCtrl.prototype.edit = function (id, back) {
+            this.$location.url("/user/" + id + "?back=" + back);
         };
-        UserCtrl.prototype.create = function () {
-            this.$location.url("/new/");
+        UserCtrl.prototype.create = function (back) {
+            this.$location.url("/new/?back=" + back);
         };
         UserCtrl.prototype.toggleAdmin = function (user) {
             this.userService.toggleAdmin(user);
+        };
+        UserCtrl.prototype.add = function () {
+            this.userService.create(new app.User(undefined, 'lalala', 'LALALA', false));
         };
         UserCtrl.prototype.deleteUser = function (user) {
             this.userService.deleteUser(user);
@@ -71,6 +159,41 @@ var app;
         return UserCtrl;
     })();
     app.UserCtrl = UserCtrl;
+})(app || (app = {}));
+
+var app;
+(function (app) {
+    'use strict';
+    function PanelDirective() {
+        return {
+            replace: true,
+            transclude: true,
+            restrict: 'E',
+            templateUrl: 'templates/panel.html',
+            scope: {
+                title: '=',
+                add: '&'
+            },
+            bindToController: true,
+            controller: app.PanelCtrl,
+            controllerAs: 'pc'
+        };
+    }
+    app.PanelDirective = PanelDirective;
+})(app || (app = {}));
+
+var app;
+(function (app) {
+    'use strict';
+    function UserDirective() {
+        return {
+            replace: true,
+            transclude: true,
+            restrict: 'E',
+            templateUrl: 'templates/user.html'
+        };
+    }
+    app.UserDirective = UserDirective;
 })(app || (app = {}));
 
 var app;
@@ -152,8 +275,8 @@ var app;
         function UserDataManagementService($http) {
             this.$http = $http;
         }
-        UserDataManagementService.prototype.getUsers = function () {
-            return this.$http.get("/api/users", {
+        UserDataManagementService.prototype.getUsers = function (user) {
+            return this.$http.get("/api/users" + (user ? '?name=' + user.name + '&surname=' + user.surname : ''), {
                 transformResponse: function (data, headers) {
                     data = JSON.parse(data);
                     var a = [];
@@ -209,7 +332,7 @@ var app;
         };
         UserService.prototype.reloadUsers = function () {
             var _this = this;
-            this.userCRUD.getUsers()
+            this.userCRUD.getUsers(undefined)
                 .then(function (data) {
                 _this.flow.users = data;
                 _this.initSelections();
@@ -247,6 +370,20 @@ var app;
                     _this.flow.selectedUser = found;
                 });
             }
+        };
+        UserService.prototype.existsAnother = function (user) {
+            return this.userCRUD.getUsers(user).then(function (users) {
+                if (users.length > 1) {
+                    return true;
+                }
+                else if (users.length == 1) {
+                    var exp = angular.isUndefined(user.id) || (user.id != users[0].id);
+                    return exp;
+                }
+                else {
+                    return false;
+                }
+            });
         };
         UserService.prototype.create = function (user) {
             var _this = this;
@@ -294,8 +431,10 @@ var app;
             return new app.UserService(userCRUD, flow);
         }])
         .controller("UserCtrl", ['UserService', 'flow', '$location', app.UserCtrl])
-        .controller("EditCtrl", ['UserService', 'flow', '$routeParams', '$location', app.EditCtrl])
-        .controller("NewUserCtrl", ['UserService', 'flow', '$routeParams', '$location', app.NewUserCtrl])
+        .controller("EditCtrl", ['$scope', 'UserService', 'flow', '$routeParams', '$location', '$q', app.EditCtrl])
+        .controller("NewUserCtrl", ['$scope', 'UserService', 'flow', '$routeParams', '$location', '$q', app.NewUserCtrl])
+        .directive('user', [app.UserDirective])
+        .directive('panel', [app.PanelDirective])
         .filter("UserAdminFilter", app.UserAdminFilter)
         .config(['$routeProvider', '$locationProvider', function ($routeProvider, $locationProvider) {
             $locationProvider.html5Mode(true);
@@ -303,15 +442,17 @@ var app;
                 templateUrl: "templates/odminka.html",
                 controller: "UserCtrl",
                 controllerAs: 'ctrl'
-            })
-                .when("/user/:id", {
+            }).when("/user/:id", {
                 templateUrl: "templates/edit.html",
                 controller: "EditCtrl",
                 controllerAs: 'ctrl'
-            })
-                .when("/new/", {
+            }).when("/new", {
                 templateUrl: "templates/new.html",
                 controller: "NewUserCtrl",
+                controllerAs: 'ctrl'
+            }).when("/users", {
+                templateUrl: "templates/users.html",
+                controller: "UserCtrl",
                 controllerAs: 'ctrl'
             }).otherwise({
                 redirectTo: "/"

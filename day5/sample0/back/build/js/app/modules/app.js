@@ -12,8 +12,10 @@ var app;
             return new app.UserService(userCRUD, flow);
         }])
         .controller("UserCtrl", ['UserService', 'flow', '$location', app.UserCtrl])
-        .controller("EditCtrl", ['UserService', 'flow', '$routeParams', '$location', app.EditCtrl])
-        .controller("NewUserCtrl", ['UserService', 'flow', '$routeParams', '$location', app.NewUserCtrl])
+        .controller("EditCtrl", ['$scope', 'UserService', 'flow', '$routeParams', '$location', '$q', app.EditCtrl])
+        .controller("NewUserCtrl", ['$scope', 'UserService', 'flow', '$routeParams', '$location', '$q', app.NewUserCtrl])
+        .directive('user', [app.UserDirective])
+        .directive('panel', [app.PanelDirective])
         .filter("UserAdminFilter", app.UserAdminFilter)
         .config(['$routeProvider', '$locationProvider', function ($routeProvider, $locationProvider) {
             $locationProvider.html5Mode(true);
@@ -21,15 +23,17 @@ var app;
                 templateUrl: "templates/odminka.html",
                 controller: "UserCtrl",
                 controllerAs: 'ctrl'
-            })
-                .when("/user/:id", {
+            }).when("/user/:id", {
                 templateUrl: "templates/edit.html",
                 controller: "EditCtrl",
                 controllerAs: 'ctrl'
-            })
-                .when("/new/", {
+            }).when("/new", {
                 templateUrl: "templates/new.html",
                 controller: "NewUserCtrl",
+                controllerAs: 'ctrl'
+            }).when("/users", {
+                templateUrl: "templates/users.html",
+                controller: "UserCtrl",
                 controllerAs: 'ctrl'
             }).otherwise({
                 redirectTo: "/"

@@ -28,13 +28,13 @@
           ng-click="ctrl.deleteUser(ctrl.flow.selectedUser)"
           ng-disabled="!ctrl.flow.selectedUser">Delete User</button>
       <button class="btn" style="margin-top:5px"
-          ng-click="ctrl.edit()"
+          ng-click="ctrl.edit(ctrl.flow.selectedUser.id, '/odminka')"
           ng-disabled="!ctrl.flow.selectedUser">Edit User</button>
     </div>
 
   </div>
   <button class="btn" style="margin-top:5px"
-      ng-click="ctrl.create()">New User</button>
+      ng-click="ctrl.create('/odminka')">New User</button>
 
 
 </div>
